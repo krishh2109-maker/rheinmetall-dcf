@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rheinmetall AG — DCF Model | Velour Media Finance Portfolio</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --background: #09090b;
+      --card: #111217;
+      --muted: #171922;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-soft: rgba(255, 255, 255, 0.06);
+      --foreground: #f4f4f5;
+      --muted-foreground: #9ea2b3;
+      --primary: #60a5fa;
+      --primary-foreground: #0b1220;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --ring: rgba(96, 165, 250, 0.5);
+      --radius: 14px;
+    }
+
+    body {
+      background: radial-gradient(1200px 600px at 80% -10%, #1a1d2a 0%, var(--background) 45%), var(--background);
+      color: var(--foreground);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 56px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 12px 24px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border-soft);
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: 15px;
+      color: var(--muted-foreground);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      background: rgba(34, 197, 94, 0.1);
+      color: #86efac;
+      white-space: nowrap;
+    }
+
+    .hero {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 16px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted-foreground);
+      margin-bottom: 8px;
+    }
+
+    .hero h1 {
+      font-size: clamp(26px, 4vw, 36px);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted-foreground);
+      font-size: 14px;
+    }
+
+    .hero-right {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .company-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      border-radius: 10px;
+      padding: 2px 4px;
+      min-width: 210px;
+      height: 44px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      flex-shrink: 0;
+    }
+
+    .company-logo img {
+      width: 100%;
+      max-width: 198px;
+      height: 40px;
+      object-fit: contain;
+      display: block;
+      transform: scale(1.4);
+      transform-origin: center;
+    }
+
+    .metric-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted-foreground);
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--primary);
+    }
+
+    .stock-carousel-wrap {
+      padding: 16px 0 16px 16px;
+    }
+
+    .stock-carousel {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-right: 16px;
+      scrollbar-width: thin;
+    }
+
+    .stock {
+      min-width: 210px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .stock-top {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .stock-top img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      object-fit: contain;
+      padding: 4px;
+      background: #ffffff;
+    }
+
+    .stock-code { font-size: 13px; font-weight: 700; }
+    .stock-name { font-size: 11px; color: var(--muted-foreground); }
+    .stock-price { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+    .stock-change { font-size: 12px; font-weight: 700; margin-top: 4px; }
+    .stock-change.up { color: var(--success); }
+    .stock-change.down { color: var(--danger); }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .hist-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .hist-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .hist-card.latest { outline: 1px solid rgba(96, 165, 250, 0.35); }
+    .year { font-size: 11px; color: var(--muted-foreground); margin-bottom: 8px; }
+    .rev { font-size: 22px; letter-spacing: -0.03em; margin-bottom: 4px; }
+    .rev-label { font-size: 11px; color: var(--muted-foreground); margin-bottom: 10px; }
+    .divider { border: 0; border-top: 1px solid var(--border); margin-bottom: 8px; }
+    .metric { font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px; }
+    .metric span { color: var(--foreground); }
+
+    .assumptions {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0 10px;
+    }
+
+    .slider-row { margin-bottom: 12px; }
+
+    .slider-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .slider-top label {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    .slider-top .val {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #222534;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid #0f1d36;
+      cursor: pointer;
+      box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.22);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid #0f1d36;
+      cursor: pointer;
+    }
+
+    .chart-card { padding: 16px; }
+    .chart-wrap { position: relative; width: 100%; height: 260px; }
+
+    .output-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .output-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .label {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .value { font-size: 30px; line-height: 1; letter-spacing: -0.03em; }
+    .value.up { color: var(--success); }
+    .value.down { color: var(--danger); }
+    .value.neutral { color: var(--primary); }
+
+    .sens-wrap { padding: 0 16px 16px; overflow-x: auto; }
+    .sens-table {
+      width: 100%;
+      min-width: 620px;
+      border-collapse: separate;
+      border-spacing: 4px;
+      font-size: 12px;
+    }
+
+    .sens-table th, .sens-table td {
+      padding: 8px 10px;
+      text-align: center;
+      border-radius: 7px;
+    }
+
+    .sens-table thead th {
+      color: var(--muted-foreground);
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-soft);
+    }
+
+    .sens-table td.row-label {
+      text-align: left;
+      color: var(--muted-foreground);
+      background: transparent;
+    }
+
+    .sens-table td.up-cell {
+      background: rgba(34, 197, 94, 0.12);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    .sens-table td.down-cell {
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+
+    .sens-table td.active-cell {
+      outline: 2px solid var(--ring);
+      outline-offset: -1px;
+    }
+
+    .footer {
+      padding: 14px 16px 18px;
+      color: var(--muted-foreground);
+      font-size: 11px;
+      line-height: 1.7;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    @media (max-width: 1000px) {
+      .hero { grid-template-columns: 1fr; }
+      .section-grid { grid-template-columns: 1fr; }
+      .title-row { flex-direction: column; align-items: flex-start; }
+      .company-logo { min-width: 185px; padding: 4px 6px; }
+    }
+
+    @media (max-width: 760px) {
+      .hist-grid { grid-template-columns: 1fr; }
+      .assumptions { grid-template-columns: 1fr; }
+      .output-grid { grid-template-columns: 1fr; }
+      .page { padding: 14px 12px 36px; }
+      .metric-value { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <section class="card">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">Finance Portfolio · Equity Valuation</p>
+        <div class="title-row">
+          <h1>Rheinmetall AG<br>Discounted Cash Flow Model</h1>
+          <div class="company-logo" aria-label="Rheinmetall logo">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rheinmetall_logo.png" alt="Rheinmetall logo">
+          </div>
+        </div>
+        <p class="subtitle">RHM.DE · XETRA · All figures in €M · FY2025 base</p>
+      </div>
+      <div class="hero-right">
+        <div class="metric-box">
+          <p class="metric-label">Current price</p>
+          <p class="metric-value">€1,396</p>
+        </div>
+        <div class="badge">Live Scenario</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <p class="title">US stocks · community trends</p>
+      <p class="title">Reference market sentiment</p>
+    </div>
+    <div class="stock-carousel-wrap">
+      <div class="stock" style="display:none"></div>
+      <div class="stock-carousel">
+        <article class="stock">
+          <div class="stock-top">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple logo">
+            <div>
+              <p class="stock-code">AAPL</p>
+              <p class="stock-name">Apple Inc</p>
+            </div>
+          </div>
+          <p class="stock-price">257.13 USD</p>
+          <p class="stock-change up">+0.66%</p>
+        </article>
+        <article class="stock">
+          <div class="stock-top">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/AMD_Logo.svg" alt="AMD logo">
+            <div>
+              <p class="stock-code">AMD</p>
+              <p class="stock-name">Advanced Micro Devices</p>
+            </div>
+          </div>
+          <p class="stock-price">169.73 USD</p>
+          <p class="stock-change up">+3.49%</p>
+        </article>
+        <article class="stock">
+          <div class="stock-top">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg" alt="Amazon logo">
+            <div>
+              <p class="stock-code">AMZN</p>
+              <p class="stock-name">Amazon.com, Inc.</p>
+            </div>
+          </div>
+          <p class="stock-price">222.41 USD</p>
+          <p class="stock-change up">+0.81%</p>
+        </article>
+        <article class="stock">
+          <div class="stock-top">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png" alt="Tesla logo">
+            <div>
+              <p class="stock-code">TSLA</p>
+              <p class="stock-name">Tesla, Inc.</p>
+            </div>
+          </div>
+          <p class="stock-price">177.46 USD</p>
+          <p class="stock-change down">-1.21%</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-grid">
+    <div class="card" style="padding:16px;">
+      <p class="section-title">Historical financials</p>
+      <div class="hist-grid">
+        <div class="hist-card">
+          <p class="year">FY 2023</p>
+          <p class="rev">€7,176M</p>
+          <p class="rev-label">Revenue</p>
+          <hr class="divider">
+          <p class="metric">EBIT <span>€854M</span> (11.9%)</p>
+          <p class="metric">FCF <span>€345M</span></p>
+        </div>
+        <div class="hist-card">
+          <p class="year">FY 2024</p>
+          <p class="rev">€7,715M</p>
+          <p class="rev-label">Revenue</p>
+          <hr class="divider">
+          <p class="metric">EBIT <span>€1,329M</span> (17.2%)</p>
+          <p class="metric">FCF <span>€988M</span></p>
+        </div>
+        <div class="hist-card latest">
+          <p class="year">FY 2025</p>
+          <p class="rev">€9,935M</p>
+          <p class="rev-label">Revenue</p>
+          <hr class="divider">
+          <p class="metric">EBIT <span>€1,702M</span> (17.1%)</p>
+          <p class="metric">FCF <span>€1,415M</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px;">
+      <p class="section-title">Assumptions</p>
+      <div class="assumptions">
+        <div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>Revenue growth Y1–3</label>
+              <span class="val" id="g1-out">30%</span>
+            </div>
+            <input type="range" min="5" max="60" value="30" step="1" id="g1" oninput="update()">
+          </div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>Revenue growth Y4–5</label>
+              <span class="val" id="g2-out">15%</span>
+            </div>
+            <input type="range" min="3" max="40" value="15" step="1" id="g2" oninput="update()">
+          </div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>EBIT margin</label>
+              <span class="val" id="ebit-out">18%</span>
+            </div>
+            <input type="range" min="10" max="30" value="18" step="1" id="ebit-m" oninput="update()">
+          </div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>CapEx (% revenue)</label>
+              <span class="val" id="capex-out">9%</span>
+            </div>
+            <input type="range" min="3" max="20" value="9" step="1" id="capex" oninput="update()">
+          </div>
+        </div>
+        <div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>Tax rate</label>
+              <span class="val" id="tax-out">27%</span>
+            </div>
+            <input type="range" min="15" max="35" value="27" step="1" id="tax" oninput="update()">
+          </div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>D&A (% revenue)</label>
+              <span class="val" id="da-out">3%</span>
+            </div>
+            <input type="range" min="1" max="10" value="3" step="1" id="da" oninput="update()">
+          </div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>WACC</label>
+              <span class="val" id="wacc-out">9%</span>
+            </div>
+            <input type="range" min="6" max="15" value="9" step="1" id="wacc" oninput="update()">
+          </div>
+          <div class="slider-row">
+            <div class="slider-top">
+              <label>Terminal growth rate</label>
+              <span class="val" id="tg-out">3%</span>
+            </div>
+            <input type="range" min="1" max="5" value="3" step="1" id="tg" oninput="update()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card chart-card">
+    <p class="section-title">Projected free cash flow to firm (€M)</p>
+    <div class="chart-wrap">
+      <canvas id="fcfChart" role="img" aria-label="Bar chart of projected Rheinmetall free cash flows 2026 to 2030">Projected FCFF 2026–2030</canvas>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <p class="title">Valuation output</p>
+      <p class="title">Scenario snapshot</p>
+    </div>
+    <div class="output-grid">
+      <div class="output-card">
+        <p class="label">Intrinsic value / share</p>
+        <p class="value neutral" id="intrinsic">—</p>
+      </div>
+      <div class="output-card">
+        <p class="label">Upside / downside vs €1,396</p>
+        <p class="value neutral" id="upside">—</p>
+      </div>
+      <div class="output-card">
+        <p class="label">Enterprise value</p>
+        <p class="value neutral" id="ev">—</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <p class="title">Sensitivity — intrinsic value / share (€)</p>
+      <p class="title">WACC vs terminal growth</p>
+    </div>
+    <div class="sens-wrap">
+      <table class="sens-table" id="sens"></table>
+    </div>
+    <div class="footer">
+      <p>Net debt: €482M · Shares outstanding: 46.66M · Base revenue (FY2025): €9,935M · Cash estimated at €800M</p>
+      <p style="margin-top:4px;">Source: Yahoo Finance, Google Finance · Model built with Claude · For portfolio purposes only — not investment advice</p>
+      <p style="margin-top:4px;">Built by Krish Kapoor</p>
+    </div>
+  </section>
+
+</div>
+<script>
+  const BASE = 9935, NET_DEBT = 482, SHS = 46.66, CUR = 1396;
+
+  function dcf(g1,g2,eM,tax,da,cx,w,tg) {
+    if (w <= tg) return { fcffs: [], iv: 0, ev: 0 };
+    const revs = [], fcffs = [];
+    for (let i=1;i<=5;i++) {
+      const g = i<=3?g1:g2;
+      const rev = i===1 ? BASE*(1+g) : revs[i-2]*(1+g);
+      revs.push(rev);
+      const fcff = rev*eM*(1-tax) + rev*da - rev*cx;
+      fcffs.push(fcff);
+    }
+    const tv = fcffs[4]*(1+tg)/(w-tg);
+    let pv = 0;
+    for (let i=0;i<5;i++) pv += fcffs[i]/Math.pow(1+w,i+1);
+    pv += tv/Math.pow(1+w,5);
+    return { fcffs, iv: (pv-NET_DEBT)/SHS, ev: pv };
+  }
+
+  let chart;
+
+  function update() {
+    const g1 = +document.getElementById('g1').value/100;
+    const g2 = +document.getElementById('g2').value/100;
+    const eM = +document.getElementById('ebit-m').value/100;
+    const tax = +document.getElementById('tax').value/100;
+    const da = +document.getElementById('da').value/100;
+    const cx = +document.getElementById('capex').value/100;
+    const w = +document.getElementById('wacc').value/100;
+    const tg = +document.getElementById('tg').value/100;
+
+    document.getElementById('g1-out').textContent = Math.round(g1*100)+'%';
+    document.getElementById('g2-out').textContent = Math.round(g2*100)+'%';
+    document.getElementById('ebit-out').textContent = Math.round(eM*100)+'%';
+    document.getElementById('tax-out').textContent = Math.round(tax*100)+'%';
+    document.getElementById('da-out').textContent = Math.round(da*100)+'%';
+    document.getElementById('capex-out').textContent = Math.round(cx*100)+'%';
+    document.getElementById('wacc-out').textContent = Math.round(w*100)+'%';
+    document.getElementById('tg-out').textContent = Math.round(tg*100)+'%';
+
+    const { fcffs, iv, ev } = dcf(g1,g2,eM,tax,da,cx,w,tg);
+    const ivR = Math.round(iv);
+    const up = ((iv-CUR)/CUR*100).toFixed(1);
+    const sign = iv>CUR?'+':'';
+    const dir = iv>CUR?'up':'down';
+
+    document.getElementById('intrinsic').textContent = '€'+ivR.toLocaleString();
+    document.getElementById('intrinsic').className = 'value '+dir;
+    document.getElementById('upside').textContent = sign+up+'%';
+    document.getElementById('upside').className = 'value '+dir;
+    document.getElementById('ev').textContent = '€'+(ev/1000).toFixed(1)+'B';
+
+    const yrs = ['2026','2027','2028','2029','2030'];
+    if (chart) {
+      chart.data.datasets[0].data = fcffs.map(f=>Math.round(f));
+      chart.update('none');
+    } else {
+      chart = new Chart(document.getElementById('fcfChart'), {
+        type: 'bar',
+        data: { labels: yrs, datasets: [{ data: fcffs.map(f=>Math.round(f)), backgroundColor: '#60a5fa', borderRadius: 3, borderSkipped: false }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c=>'€'+c.raw.toLocaleString()+'M' }, backgroundColor: '#1e1e1e', titleColor: '#888780', bodyColor: '#f0ede8', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 0.5 } },
+          scales: {
+            x: { grid: { display: false }, border: { display: false }, ticks: { color: '#555451', font: { size: 11, family: 'Courier New' } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)', lineWidth: 0.5 }, border: { display: false }, ticks: { color: '#555451', font: { size: 11, family: 'Courier New' }, callback: v=>'€'+(v/1000).toFixed(1)+'B' } }
+          }
+        }
+      });
+    }
+
+    const wVals = [0.07,0.08,0.09,0.10,0.11];
+    const tgVals = [0.02,0.025,0.03,0.035,0.04];
+    const cW = wVals.reduce((p,c)=>Math.abs(c-w)<Math.abs(p-w)?c:p);
+    const cTg = tgVals.reduce((p,c)=>Math.abs(c-tg)<Math.abs(p-tg)?c:p);
+
+    let html = '<thead><tr><th style="text-align:left;color:#555451;font-weight:normal;padding:7px 10px;"></th>';
+    for (const t of tgVals) html += `<th>${(t*100).toFixed(1)}%</th>`;
+    html += '</tr></thead><tbody>';
+    for (const ww of wVals) {
+      const isCW = Math.abs(ww-cW)<0.001;
+      html += `<tr><td class="row-label" style="font-weight:${isCW?'bold':'normal'}">${Math.round(ww*100)}%</td>`;
+      for (const tt of tgVals) {
+        const res = dcf(g1,g2,eM,tax,da,cx,ww,tt);
+        const val = Math.round(res.iv);
+        const isCell = isCW && Math.abs(tt-cTg)<0.001;
+        const cls = (res.iv>CUR?'up-cell':'down-cell')+(isCell?' active-cell':'');
+        html += `<td class="${cls}">€${val.toLocaleString()}</td>`;
+      }
+      html += '</tr>';
+    }
+    html += '</tbody>';
+    document.getElementById('sens').innerHTML = html;
+  }
+
+  update();
+</script>
+</body>
+</html>
