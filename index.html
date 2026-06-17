@@ -578,6 +578,14 @@
       text-decoration: underline;
     }
 
+    .hero-title-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
     /* Responsiveness */
     @media (max-width: 1024px) {
       .layout-split {
@@ -590,7 +598,7 @@
       }
       .hero-right {
         width: 100%;
-        justify-content: space-between;
+        justify-content: flex-start;
       }
     }
 
@@ -614,6 +622,49 @@
         grid-template-columns: 1fr;
       }
     }
+
+    @media (max-width: 600px) {
+      .hero-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .logo-wrap {
+        min-width: 160px;
+        height: 34px;
+      }
+      .logo-wrap img {
+        max-width: 150px;
+        height: 30px;
+        transform: scale(1.2);
+      }
+      .hero-left h1 {
+        font-size: 24px;
+      }
+      .live-price-box {
+        text-align: left;
+        width: 100%;
+      }
+      .card {
+        padding: 16px;
+      }
+      .hist-card {
+        padding: 14px;
+      }
+      .output-card {
+        padding: 14px;
+      }
+      .output-card .val {
+        font-size: 26px;
+      }
+      .chart-container {
+        height: 220px;
+      }
+      .sens-table th, .sens-table td {
+        padding: 6px 8px;
+        font-size: 11px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -627,7 +678,7 @@
           Equity Valuation Engine 
           <span class="badge">RHM.DE · XETRA</span>
         </p>
-        <div class="hero-title-row" style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin-bottom: 8px;">
+        <div class="hero-title-row">
           <h1 style="margin-bottom: 0;">Rheinmetall AG DCF Model</h1>
           <div class="logo-wrap" aria-label="Rheinmetall AG logo">
             <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Rheinmetall_AG_Logo.svg" alt="Rheinmetall AG Logo">
